@@ -1,10 +1,10 @@
 # CPU simulada de 8 bits
 
-Trabalho de Arquitetura de Computadores, UFC Sobral, 2026.2.
+Projeto da disciplina de Arquitetura de Computadores da UFC Sobral, semestre 2026.2.
 
 **Integrantes:** Jander Luis Magalhães Coutinho e Arthur Fernandes Viana.
 
-Implementação baseada no código-base fornecido pelo professor Wendley S. Silva.
+O projeto usa o código-base fornecido pelo professor Wendley S. Silva.
 
 Repositório: https://github.com/janderluis/TrabalhoAOC
 
@@ -12,8 +12,8 @@ Material de apoio: [guia simplificado](docs/Guia_CPU_Simulada.pdf).
 
 ## Execução
 
-É necessário Python 3. Não há bibliotecas externas para executar a CPU ou os testes.
-Abra o terminal nesta pasta. No Windows, se `python` não estiver disponível, substitua por `py`.
+Para executar a CPU e os testes, basta ter o Python 3 instalado. Não é preciso instalar bibliotecas externas.
+Abra o terminal nesta pasta. No Windows, se `python` não estiver disponível, use `py`.
 
 ```bash
 python main.py
@@ -22,7 +22,7 @@ python main.py --resumo
 python testes.py
 ```
 
-`--passo` aguarda Enter antes de cada instrução. A saída mostra PC, instrução, registradores antes/depois, alterações de memória e o PC seguinte. Os valores são exibidos em decimal e hexadecimal; `0x0E` equivale a 14 decimal.
+Com `--passo`, pressione Enter para executar cada instrução. O terminal mostra o PC atual, a instrução, os registradores antes e depois, as mudanças na memória e o próximo PC. Os valores aparecem em decimal e hexadecimal: `0x0E`, por exemplo, corresponde a 14 em decimal.
 
 Outras demonstrações:
 
@@ -45,11 +45,11 @@ python main.py --resumo --csv evolucao.csv
 | Controle | Métodos da classe CPU que buscam, decodificam e executam |
 | Encerramento | `halted = True` após HALT |
 
-As instruções são strings, por exemplo `"ADD R0, R1"`. Os dados são inteiros. Código e dados compartilham a mesma lista, conforme a representação didática permitida no enunciado. Uma string de instrução não é codificada em um byte real; a regra de 8 bits aplica-se aos valores numéricos.
+As instruções são guardadas como strings, por exemplo `"ADD R0, R1"`, e os dados como números inteiros. Ambos ficam na mesma lista, como permite o enunciado. A limitação de 8 bits vale para os números; as instruções em texto não são codificadas em um byte real.
 
-`LOAD` carrega um **valor imediato**. Em `LOAD R0, 5`, 5 é o próprio valor, não o endereço de memória. Essa escolha segue o conjunto mínimo de instruções e o código-base do professor. O texto geral do enunciado menciona transferências entre memória e registradores, mas não define uma instrução de leitura de dados por endereço.
+`LOAD` carrega um valor imediato. Em `LOAD R0, 5`, o número 5 é o valor que vai para R0, não um endereço de memória. Esse comportamento segue a tabela de instruções e o código-base do professor. O enunciado também menciona transferências entre memória e registradores, mas não define uma instrução para ler dados por endereço.
 
-O PC normalmente avança em uma posição. `JMP` substitui o PC pelo endereço de destino. `HALT` interrompe a execução e mantém o PC na instrução de parada, como no código-base. Depois de `HALT`, novas chamadas de ciclo não executam instruções.
+O PC normalmente avança uma posição após a instrução. Com `JMP`, ele recebe o endereço do salto. `HALT` encerra a execução e mantém o PC na instrução de parada, como no código-base. Depois de `HALT`, chamar outro ciclo não executa nenhuma instrução.
 
 ## Conjunto de instruções
 
@@ -65,7 +65,7 @@ O PC normalmente avança em uma posição. `JMP` substitui o PC pelo endereço d
 | `JMP 10` | PC recebe 10 |
 | `HALT` | Encerra a execução |
 
-Nas operações com dois registradores, o primeiro recebe o resultado. O segundo é apenas lido, exceto quando ambos os operandos indicam o mesmo registrador.
+Nas operações com dois registradores, o resultado fica no primeiro. O segundo mantém seu valor, exceto quando os dois operandos apontam para o mesmo registrador.
 
 ## Ciclo Fetch / Decode / Execute
 
@@ -73,11 +73,11 @@ Nas operações com dois registradores, o primeiro recebe o resultado. O segundo
 2. **Decode:** `decodificar()` separa operação e operandos, verifica os registradores e endereços.
 3. **Execute:** `executar_instrucao()` faz a transferência, chama a ULA, modifica o PC ou encerra.
 
-Cada ciclo salva uma cópia dos registradores antes e depois, o PC antes e depois e as posições de memória que mudaram. Esse histórico produz a tabela final.
+O histórico guarda cópias dos registradores e os valores do PC antes e depois de cada ciclo, além das posições de memória que mudaram. A tabela final é montada a partir desses registros.
 
 ## Representação de 8 bits
 
-A função `limitar_8bits(valor)` aplica `valor & 0xFF`, preservando os oito bits menos significativos. Para inteiros, o efeito equivale ao resto da divisão por 256.
+A função `limitar_8bits(valor)` usa a máscara `valor & 0xFF` para manter os oito bits menos significativos. Com números inteiros, isso equivale a calcular o resto da divisão por 256.
 
 - 5 + 8 = 13.
 - 255 + 1 = 256; em 8 bits, o resultado armazenado é 0.
@@ -87,7 +87,7 @@ Não há flags de carry, overflow ou sinal nesta arquitetura.
 
 ## Programa próprio
 
-O programa transforma o valor inicial 12 por operações aritméticas e lógicas, grava o resultado na posição 15 e salva o valor de R1 na posição 14. Inclui as cinco operações da ULA, LOAD, STORE, JMP e HALT.
+O programa começa com o valor 12 e aplica operações aritméticas e lógicas. Ao final, grava o resultado na posição 15 e o valor de R1 na posição 14. Ele usa as cinco operações da ULA, além de LOAD, STORE, JMP e HALT.
 
 ```text
 00: LOAD R0, 12
@@ -105,11 +105,11 @@ O programa transforma o valor inicial 12 por operações aritméticas e lógicas
 12: HALT
 ```
 
-Há 13 instruções armazenadas e 12 efetivamente executadas. O salto pula o endereço 9. As posições 14 e 15 estão livres para dados; STORE não sobrescreve as instruções desse programa.
+Das 13 instruções armazenadas, 12 são executadas: o salto pula o endereço 9. As posições 14 e 15 ficam livres para os dados, então STORE não sobrescreve nenhuma instrução desse programa.
 
 ### Evolução esperada e verificada pelos testes
 
-Todos os valores desta tabela são decimais e correspondem ao estado **depois** da instrução.
+A tabela mostra os valores em decimal, depois de cada instrução.
 
 | Ciclo | PC antes | Instrução | R0 | R1 | R2 | R3 | PC depois |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -138,11 +138,11 @@ XOR: 00000111 ( 7) XOR 00000101 (5) = 00000010 (2)
 
 ## Testes
 
-`testes.py` usa `unittest`, da biblioteca padrão. Verifica as cinco operações da ULA, LOAD, STORE, avanço do PC, salto, parada, exemplo do enunciado, programa próprio e limites de 8 bits. Também cobre registradores e endereços inválidos, limite de ciclos e execução passo a passo.
+Os testes de `testes.py` usam `unittest`, da biblioteca padrão do Python. Conferem as cinco operações da ULA, LOAD, STORE, o avanço e o salto do PC, a parada, os limites de 8 bits e os dois programas: o exemplo do enunciado e o programa próprio. Também verificam registradores e endereços inválidos, o limite de ciclos e o modo passo a passo.
 
-Resultado da execução local em Python 3.14: **36 testes aprovados**.
+Na execução local com Python 3.14, os 36 testes passaram.
 
-O exemplo do enunciado produz **MEM[15] = 13**. O programa `8bits` demonstra a volta para zero em 255 + 1 e para 255 em 0 - 1.
+O exemplo do enunciado grava MEM[15] = 13. Já o programa `8bits` mostra como o resultado volta para zero em 255 + 1 e passa a 255 em 0 - 1.
 
 ## Arquivos
 
@@ -154,4 +154,4 @@ O exemplo do enunciado produz **MEM[15] = 13**. O programa `8bits` demonstra a v
 
 ## Limites do modelo
 
-É uma simulação didática. Não há clock físico, pipeline, interrupções, entrada/saída ou instruções binárias reais. Saltar para uma posição que contém um dado gera erro. Um programa sem HALT é interrompido pelo limite de ciclos, não por uma instrução de parada.
+Nesta simulação didática, não há clock físico, pipeline, interrupções, entrada/saída ou instruções binárias reais. Se o PC apontar para uma posição que contém um dado, a busca da instrução gera um erro. Um programa sem HALT para ao atingir o limite de ciclos, não por uma instrução de parada.
