@@ -8,7 +8,7 @@ Implementação baseada no código-base fornecido pelo professor Wendley S. Silv
 
 Repositório: https://github.com/janderluis/TrabalhoAOC
 
-Material de apoio: [guia simplificado](docs/Guia_CPU_Simulada.pdf) e [roteiro do vídeo](docs/Roteiro_Video_AOC.pdf).
+Material de apoio: [guia simplificado](docs/Guia_CPU_Simulada.pdf).
 
 ## Execução
 
@@ -151,7 +151,6 @@ O exemplo do enunciado produz **MEM[15] = 13**. O programa `8bits` demonstra a v
 - `programas.py`: programa próprio e exemplos.
 - `main.py`: terminal, passo a passo, tabela e exportação CSV.
 - `testes.py`: testes automáticos.
-- `ROTEIRO_APRESENTACAO.md`: fala sugerida para um vídeo de até cinco minutos.
 
 ## Limites do modelo
 
