@@ -8,8 +8,6 @@ O projeto usa o código-base fornecido pelo professor Wendley S. Silva.
 
 Repositório: https://github.com/janderluis/TrabalhoAOC
 
-Material de apoio: [guia simplificado](docs/Guia_CPU_Simulada.pdf).
-
 ## Execução
 
 Para executar a CPU e os testes, basta ter o Python 3 instalado. Não é preciso instalar bibliotecas externas.
